@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-2023mt03164
+  labels:
+    app: my-fastapi-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-fastapi-app
+  template:
+    metadata:
+      labels:
+        app: my-fastapi-app
+    spec:
+      containers:
+      - name: cnr-2023mt03164
+        image: bits2023mt03164/img-2023mt03164
+        envFrom:
+        - configMapRef:
+            name: config-2023mt03164
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-service
+  labels:
+    app: my-fastapi-app  # Ensure this matches the ServiceMonitor's selector
+spec:
+  selector:
+    app: my-fastapi-app  # Ensure this matches the labels in the Deployment
+  ports:
+  - name: http        # This name must match the 'port' in ServiceMonitor
+    protocol: TCP
+    port: 8000        # The port exposed by the service
+    targetPort: 8000  # The container port to forward to
